@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Currency Converter</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #2c3e50;
+    }
+
+    .converter-box {
+      background-color: #ffffff;
+      padding: 50px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: inline-block;
+      max-width: 900px;  
+      font-size: 20px;   
+    }
+
+    input, select, button {
+      padding: 16px;
+      margin: 10px 5px;
+      font-size: 18px;
+      width: 180px;
+    }
+
+    .currency-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .currency-row span {
+      margin: 0 20px;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    button {
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 10px;
+      width: 120px;
+    }
+
+    button:hover {
+      background-color: #3498db;
+    }
+
+    #result {
+      font-size: 22px;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #27ae60;
+    }
+
+    .button-group {
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>💱 Currency Converter</h1>
+
+  <div class="converter-box">
+    <input type="number" id="amount" placeholder="Enter amount" />
+
+    <div class="currency-row">
+      <select id="fromCurrency">
+        <option value="USD">USD ($)</option>
+        <option value="INR">INR (₹)</option>
+        <option value="EUR">EUR (€)</option>
+        <option value="GBP">GBP (£)</option>
+        <option value="JPY">JPY (¥)</option>
+      </select>
+
+      <span>to</span>
+
+      <select id="toCurrency">
+        <option value="USD">USD ($)</option>
+        <option value="INR">INR (₹)</option>
+        <option value="EUR">EUR (€)</option>
+        <option value="GBP">GBP (£)</option>
+        <option value="JPY">JPY (¥)</option>
+      </select>
+    </div>
+
+    <div class="button-group">
+      <button onclick="convertCurrency()">Convert</button>
+      <button onclick="clearFields()">Clear</button>
+    </div>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const currencySymbols = {
+      USD: "$",
+      INR: "₹",
+      EUR: "€",
+      GBP: "£",
+      JPY: "¥"
+    };
+
+    async function convertCurrency() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const from = document.getElementById("fromCurrency").value;
+      const to = document.getElementById("toCurrency").value;
+      const resultBox = document.getElementById("result");
+
+      if (isNaN(amount) || amount <= 0) {
+        resultBox.innerText = "❌ Please enter a valid amount.";
+        resultBox.style.color = "#c0392b";
+        return;
+      }
+
+      const API_KEY = "e785546a8a8a02975f13831a"; 
+      const url = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/${from}`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.result === "success") {
+          const rate = data.conversion_rates[to];
+          const converted = (amount * rate).toFixed(2);
+          const symbol = currencySymbols[to] || to;
+          const fromSymbol = currencySymbols[from] || from;
+
+          resultBox.innerText = `${fromSymbol}${amount} ${from} = ${symbol}${converted} ${to}`;
+          resultBox.style.color = "#27ae60";
+        } else {
+          resultBox.innerText = "❌ Conversion failed. Check currency or API.";
+          resultBox.style.color = "#c0392b";
+        }
+      } catch (error) {
+        resultBox.innerText = "❌ Error fetching data.";
+        resultBox.style.color = "#c0392b";
+        console.error(error);
+      }
+    }
+
+    function clearFields() {
+      document.getElementById("amount").value = "";
+      document.getElementById("fromCurrency").selectedIndex = 0;
+      document.getElementById("toCurrency").selectedIndex = 1;
+      document.getElementById("result").innerText = "";
+    }
+  </script>
+</body>
+</html>
