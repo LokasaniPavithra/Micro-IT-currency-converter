@@ -26,7 +26,3 @@ A simple and elegant web-based currency converter that allows users to convert v
 3. Select the source and target currencies.
 4. Click **Convert**.
 5. The result will be displayed below.
-
-## 📄 License
-
-This project is licensed under the [MIT License](./LICENSE).
